@@ -8,6 +8,8 @@
 
 // https://api.telegram.org/bot<token>/METHOD_NAME
 
+// https://fluidsync.herokuapp.com/
+
 //------------------------------------------------------------------------------
 
 const token = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEE';
@@ -23,12 +25,10 @@ const app = express();
 
 //------------------------------------------------------------------------------
 
-var telegramRequest = 
-{
-    hostname: telegramApiHost,
-    port: 443,
-    method: 'GET'
-};    
+
+//------------------------------------------------------------------------------
+
+var updateId = 0;
 
 //------------------------------------------------------------------------------
 
@@ -42,50 +42,87 @@ app.get('/', (req, res) =>
 app.post(postPathWithToken, (req, res) => 
 {
     res.end();
-    
-    //console.log(req.body);
+
     react(req.body);
 });
 
 app.listen(process.env.PORT, () => 
 {
-    console.log(`Example app listening on port ${process.env.PORT}!`);
+    console.log(`Bot listening on port ${process.env.PORT}!`);
 });
 
 //------------------------------------------------------------------------------
 
 function react(updateInfo)
 {
-    var message = updateInfo.message;
-    
-    if(message)
+    var id = updateInfo.update_id;
+
+    if(id > updateId)
     {
-        telegramRequest.path = telegramApiPathWithToken + 'sendMessage?chat_id=' + message.chat.id + '&text=X3:%20' + message.text;
-    
-        const req = https.request(telegramRequest, (res) => 
+        updateId = id;
+
+        var message = updateInfo.message;    
+
+        if(message)
         {
-            var body = '';
-            
-            res.setEncoding('utf8');
-            
-            res.on('data', (data) => 
-            {
-                body += data;
-            });        
-            
-            res.on('end', () => 
-            {
-                getTelegramMethodResult(body);
-            });
-        });    
-        
-        req.on('error', (e) => 
-        {
-            console.log(e);
-        });
-        
-        req.end();
+            replyToMessage(message);
+        }
     }
+}
+
+//------------------------------------------------------------------------------
+
+function replyToMessage(message)
+{
+    var methodParametersObject = 
+    {
+        chat_id: message.chat.id,
+        text: 'X3: ' + message.text
+    };
+
+    sendTelegramMethod('sendMessage', methodParametersObject);
+}
+
+//------------------------------------------------------------------------------
+
+function sendTelegramMethod(method, methodParameters)
+{
+    var telegramRequest = 
+    {
+        hostname: telegramApiHost,
+        path: telegramApiPathWithToken + method,
+        port: 443,
+        method: 'POST'
+    };    
+    
+    const req = https.request(telegramRequest, (res) => 
+    {
+        var body = '';
+        
+        res.setEncoding('utf8');
+        
+        res.on('data', (data) => 
+        {
+            body += data;
+        });        
+        
+        res.on('end', () => 
+        {
+            getTelegramMethodResult(body);
+        });
+    });    
+    
+    req.on('error', (e) => 
+    {
+        console.log(e);
+    });
+    
+    const jsonString = JSON.stringify(methodParameters);
+
+    req.setHeader('Content-Type', 'application/json');
+    req.write(jsonString);
+
+    req.end();    
 }
 
 //------------------------------------------------------------------------------
