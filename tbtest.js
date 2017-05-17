@@ -8,27 +8,30 @@
 
 // https://api.telegram.org/bot<token>/METHOD_NAME
 
-// https://fluidsync.herokuapp.com/
+// hurl.it
+// https://api.telegram.org/bot396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEE/setWebhook?url=https://fluidsync.herokuapp.com/396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEE
+// https://api.telegram.org/bot396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEE/setWebhook?url=https://helpers-nowido.c9users.io/396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEE
 
 //------------------------------------------------------------------------------
 
 const token = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEE';
 const postPathWithToken = '/' + token;
-const telegramApiHost = 'api.telegram.org';
-const telegramApiPathWithToken = '/bot' + token + '/';
+const telegramApiHost = 'https://api.telegram.org/bot' + token + '/';
 
-const https = require('https');
+const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
+const request = require('request');
 
 const app = express();
 
 //------------------------------------------------------------------------------
 
-
-//------------------------------------------------------------------------------
-
 var updateId = 0;
+
+const imageFileName = 'sibirnash.jpg';
+
+var imageFileId = undefined;
 
 //------------------------------------------------------------------------------
 
@@ -74,13 +77,32 @@ function react(updateInfo)
 
 function replyToMessage(message)
 {
+    var text = message.text;
+    
     var methodParametersObject = 
     {
-        chat_id: message.chat.id,
-        text: 'X3: ' + message.text
+        chat_id: message.chat.id
     };
+    
+    if(text === 'pic')
+    {
+        if(imageFileId)
+        {
+            methodParametersObject.photo = imageFileId;
+        
+            sendTelegramMethod('sendPhoto', methodParametersObject);
+        }
+        else
+        {
+            uploadImage(message.chat.id, imageFileName);
+        }
+    }
+    else
+    {
+        methodParametersObject.text = 'X3: ' + message.text;
 
-    sendTelegramMethod('sendMessage', methodParametersObject);
+        sendTelegramMethod('sendMessage', methodParametersObject);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -89,61 +111,75 @@ function sendTelegramMethod(method, methodParameters)
 {
     var telegramRequest = 
     {
-        hostname: telegramApiHost,
-        path: telegramApiPathWithToken + method,
-        port: 443,
-        method: 'POST'
+        url: '/' + method,
+        baseUrl: telegramApiHost,
+        method: 'POST',
+        json: true,
+        body: methodParameters
     };    
     
-    const req = https.request(telegramRequest, (res) => 
+    request(telegramRequest, (err, res, resBody) => 
     {
-        var body = '';
-        
-        res.setEncoding('utf8');
-        
-        res.on('data', (data) => 
+        if(err)
         {
-            body += data;
-        });        
-        
-        res.on('end', () => 
+            console.log('Error while parsing answer from telegram:');    
+            console.log(err);    
+        }
+        else
         {
-            getTelegramMethodResult(body);
-        });
-    });    
-    
-    req.on('error', (e) => 
-    {
-        console.log(e);
+            if(!resBody.ok)
+            {
+                console.log('Telegram reports error:');
+                console.log(resBody.description);        
+            }
+        }
     });
-    
-    const jsonString = JSON.stringify(methodParameters);
-
-    req.setHeader('Content-Type', 'application/json');
-    req.write(jsonString);
-
-    req.end();    
 }
 
 //------------------------------------------------------------------------------
 
-function getTelegramMethodResult(body)
+function uploadImage(chatId, name)
 {
-    try
+    var formData = 
     {
-        const resObject = JSON.parse(body);    
-        
-        if(!resObject.ok)
+        chat_id: chatId,
+        photo: fs.createReadStream(__dirname + '/' + name)
+    };
+    
+    var telegramRequest = 
+    {
+        url: '/sendPhoto',
+        baseUrl: telegramApiHost,
+        formData: formData
+    };    
+    
+    request.post(telegramRequest, (err, res, resBody) => 
+    {
+        if(err)
         {
-            console.log('Telegram reports error:');
-            console.log(resObject.description);        
+            console.log(err);    
         }
-    }
-    catch(e)
-    {
-        console.log('Error while parsing answer from telegram:');    
-        console.log(e);    
-    }
+        else
+        {
+            try
+            {
+                var resObject = JSON.parse(resBody);
+                
+                if(resObject.ok)
+                {
+                    var photos = resObject.result.photo;
+                    
+                    var biggestSizeIndex = photos.length - 1;
+                    
+                    imageFileId = photos[biggestSizeIndex].file_id;
+                }
+            }
+            catch(e)
+            {
+                console.log(e);    
+            }
+        }
+    });
 }
 
 //------------------------------------------------------------------------------
