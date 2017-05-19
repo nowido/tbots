@@ -6,6 +6,9 @@
 // Use this token to access the HTTP API:
 //  396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEE
 
+//  fluid_sync_game
+// id = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEEgame'
+
 // https://api.telegram.org/bot<token>/METHOD_NAME
 
 // hurl.it
@@ -17,6 +20,9 @@
 const token = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEE';
 const postPathWithToken = '/' + token;
 const telegramApiHost = 'https://api.telegram.org/bot' + token + '/';
+
+const fluid_sync_game_id = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEEgame';
+const fluid_sync_game_url = 'https://fluidsync.herokuapp.com';
 
 const fs = require('fs');
 const express = require('express');
@@ -46,7 +52,46 @@ app.post(postPathWithToken, (req, res) =>
 {
     res.end();
 
-    react(req.body);
+    var infoFromTelegram = req.body;
+
+    if(infoFromTelegram.id)
+    {
+        if(infoFromTelegram.game_short_name)
+        {
+            // it is 'start game' command from Telegram
+
+            var methodParametersObject = 
+            {
+                callback_query_id: infoFromTelegram.id,
+                url: fluid_sync_game_url
+            };
+
+            sendTelegramMethod('answerCallbackQuery', methodParameters);            
+        }
+        else
+        {
+            // it is a request (for game)
+
+            var gameObject = 
+            {
+                type: 'game', 
+                id: fluid_sync_game_id, 
+                game_short_name: 'fluid_sync_game'
+            };
+
+            var methodParametersObject = 
+            {
+                inline_query_id: infoFromTelegram.id,
+                results: [gameObject]
+            };
+
+            sendTelegramMethod('answerInlineQuery', methodParameters);
+        }
+    }
+    else
+    {
+        react(infoFromTelegram);
+    }    
 });
 
 app.listen(process.env.PORT, () => 
