@@ -66,7 +66,7 @@ app.post(postPathWithToken, (req, res) =>
                 url: fluid_sync_game_url
             };
 
-            sendTelegramMethod('answerCallbackQuery', methodParameters);            
+            sendTelegramMethod('answerCallbackQuery', methodParametersObject);            
         }
         else
         {
@@ -85,7 +85,7 @@ app.post(postPathWithToken, (req, res) =>
                 results: [gameObject]
             };
 
-            sendTelegramMethod('answerInlineQuery', methodParameters);
+            sendTelegramMethod('answerInlineQuery', methodParametersObject);
         }
     }
     else
@@ -146,7 +146,7 @@ function replyToMessage(message)
     {
         methodParametersObject.game_short_name = 'fluid_sync_game';
 
-        sendTelegramMethod('sendGame', methodParameters);    
+        sendTelegramMethod('sendGame', methodParametersObject);    
     }
     else
     {
