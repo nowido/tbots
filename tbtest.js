@@ -23,6 +23,8 @@ const telegramApiHost = 'https://api.telegram.org/bot' + token + '/';
 
 const fluid_sync_game_id = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEEgame';
 const fluid_sync_game_url = 'https://fluidsync.herokuapp.com/' + token + '/game_assets/main.html';
+const fluid_sync_game_path = postPathWithToken + '/game_assets/main.html';
+const fluid_sync_game_main_file = '/game_assets/main.html';
 
 const fs = require('fs');
 const express = require('express');
@@ -97,9 +99,10 @@ app.post(postPathWithToken, (req, res) =>
     }    
 });
 
-app.post(fluid_sync_game_url, (req, res) => 
+app.post(fluid_sync_game_path, (req, res) => 
 {
-    res.send('Hello World\n');    
+    var f = fs.createReadStream(__dirname + fluid_sync_game_main_file);        
+    f.pipe(res);    
 });
 
 app.listen(process.env.PORT, () => 
