@@ -142,6 +142,12 @@ function replyToMessage(message)
             uploadImage(message.chat.id, imageFileName);
         }
     }
+    else if(text === 'game')
+    {
+        methodParametersObject.game_short_name = 'fluid_sync_game';
+
+        sendTelegramMethod('sendGame', methodParameters);    
+    }
     else
     {
         methodParametersObject.text = 'X3: ' + message.text;
