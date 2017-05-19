@@ -22,7 +22,7 @@ const postPathWithToken = '/' + token;
 const telegramApiHost = 'https://api.telegram.org/bot' + token + '/';
 
 const fluid_sync_game_id = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEEgame';
-const fluid_sync_game_url = 'https://fluidsync.herokuapp.com/';
+const fluid_sync_game_url = 'https://fluidsync.herokuapp.com/' + token + '/game_assets/main.html';
 
 const fs = require('fs');
 const express = require('express');
@@ -42,6 +42,9 @@ var imageFileId = undefined;
 //------------------------------------------------------------------------------
 
 app.use(bodyParser.json());
+app.use(express.static('public'))
+
+//------------------------------------------------------------------------------
 
 app.get('/', (req, res) =>
 {
@@ -92,6 +95,11 @@ app.post(postPathWithToken, (req, res) =>
     {
         react(infoFromTelegram);
     }    
+});
+
+app.post(fluid_sync_game_url, (req, res) => 
+{
+    res.send('Hello World\n');    
 });
 
 app.listen(process.env.PORT, () => 
