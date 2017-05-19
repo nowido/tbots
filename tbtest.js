@@ -22,7 +22,7 @@ const postPathWithToken = '/' + token;
 const telegramApiHost = 'https://api.telegram.org/bot' + token + '/';
 
 const fluid_sync_game_id = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEEgame';
-const fluid_sync_game_url = 'https://fluidsync.herokuapp.com';
+const fluid_sync_game_url = 'https://fluidsync.herokuapp.com/';
 
 const fs = require('fs');
 const express = require('express');
