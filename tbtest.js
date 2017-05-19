@@ -99,7 +99,7 @@ app.post(postPathWithToken, (req, res) =>
     }    
 });
 
-app.post(fluid_sync_game_path, (req, res) => 
+app.get(fluid_sync_game_path, (req, res) => 
 {
     var f = fs.createReadStream(__dirname + fluid_sync_game_main_file);        
     f.pipe(res);    
