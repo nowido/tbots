@@ -84,7 +84,7 @@ app.post(postPathWithToken, (req, res) =>
 
         sendTelegramMethod('answerInlineQuery', 
         {
-            inline_query_id: callbackQuery.id,
+            inline_query_id: inlineQuery.id,
             results: [gameObject]
         });
     }
