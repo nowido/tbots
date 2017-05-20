@@ -60,7 +60,7 @@ app.post(postPathWithToken, (req, res) =>
     var callbackQuery = infoFromTelegram.callback_query;
     var inlineQuery = infoFromTelegram.inline_query;
 
-    //console.log(infoFromTelegram);
+    console.log(infoFromTelegram);
 
     if(callbackQuery)
     {
