@@ -56,18 +56,19 @@ app.post(postPathWithToken, (req, res) =>
     res.end();
 
     var infoFromTelegram = req.body;
+    var callbackQuery = infoFromTelegram.callback_query;
 
     //console.log(infoFromTelegram);
 
-    if(infoFromTelegram.callback_query)
+    if(callbackQuery)
     {
-        if(infoFromTelegram.game_short_name)
+        if(callbackQuery.game_short_name)
         {        
             // it is 'start game' command from Telegram
 
             sendTelegramMethod('answerCallbackQuery', 
             {
-                callback_query_id: infoFromTelegram.id,
+                callback_query_id: callbackQuery.id,
                 url: fluid_sync_game_url                
             });            
         }
@@ -82,7 +83,7 @@ app.post(postPathWithToken, (req, res) =>
 
             sendTelegramMethod('answerInlineQuery', 
             {
-                inline_query_id: infoFromTelegram.id,
+                inline_query_id: callbackQuery.id,
                 results: [gameObject]
             });
         }
