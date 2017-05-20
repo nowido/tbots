@@ -25,6 +25,7 @@ const fluid_sync_game_id = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEEgame';
 const fluid_sync_game_url = 'https://fluidsync.herokuapp.com/main.html';
 //const fluid_sync_game_path = '/game_assets/main.html';
 
+const url = require('url');
 const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -69,7 +70,7 @@ app.post(postPathWithToken, (req, res) =>
             sendTelegramMethod('answerCallbackQuery', 
             {
                 callback_query_id: callbackQuery.id,
-                url: fluid_sync_game_url                
+                url: fluid_sync_game_url + '?user=' + callbackQuery.from.username
             });            
         }
     }
