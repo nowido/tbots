@@ -57,44 +57,43 @@ app.post(postPathWithToken, (req, res) =>
 
     var infoFromTelegram = req.body;
 
-    if(infoFromTelegram.id)
+    if(infoFromTelegram.game_short_name)
     {
-        if(infoFromTelegram.game_short_name)
+        console.log('game url query!');
+
+        // it is 'start game' command from Telegram
+
+        var methodParametersObject = 
         {
-            console.log('game url query!');
+            callback_query_id: infoFromTelegram.id,
+            url: fluid_sync_game_url
+        };
 
-            // it is 'start game' command from Telegram
+        sendTelegramMethod('answerCallbackQuery', methodParametersObject);            
+    }
+    else if(infoFromTelegram.id)
+    {
+        // it is an inline request 
 
-            var methodParametersObject = 
-            {
-                callback_query_id: infoFromTelegram.id,
-                url: fluid_sync_game_url
-            };
-
-            sendTelegramMethod('answerCallbackQuery', methodParametersObject);            
-        }
-        else
+        var gameObject = 
         {
-            // it is a request (for game)
+            type: 'game', 
+            id: fluid_sync_game_id, 
+            game_short_name: 'fluid_sync_game'
+        };
 
-            var gameObject = 
-            {
-                type: 'game', 
-                id: fluid_sync_game_id, 
-                game_short_name: 'fluid_sync_game'
-            };
+        var methodParametersObject = 
+        {
+            inline_query_id: infoFromTelegram.id,
+            results: [gameObject]
+        };
 
-            var methodParametersObject = 
-            {
-                inline_query_id: infoFromTelegram.id,
-                results: [gameObject]
-            };
-
-            sendTelegramMethod('answerInlineQuery', methodParametersObject);
-        }
+        sendTelegramMethod('answerInlineQuery', methodParametersObject);
     }
     else
     {
+        // it is an update
+        
         react(infoFromTelegram);
     }    
 });
