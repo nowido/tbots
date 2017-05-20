@@ -61,6 +61,8 @@ app.post(postPathWithToken, (req, res) =>
     {
         if(infoFromTelegram.game_short_name)
         {
+            console.log('game url query!');
+
             // it is 'start game' command from Telegram
 
             var methodParametersObject = 
@@ -99,7 +101,7 @@ app.post(postPathWithToken, (req, res) =>
 
 app.get(fluid_sync_game_path, (req, res) => 
 {
-    console.log('game url requested');
+    console.log('game url accessed!');
     var f = fs.createReadStream(__dirname + fluid_sync_game_main_file);        
     f.pipe(res);    
 });
