@@ -57,10 +57,10 @@ app.post(postPathWithToken, (req, res) =>
 
     var infoFromTelegram = req.body;
 
-    if(infoFromTelegram.game_short_name)
-    {
-        console.log('game url query!');
+    console.log(infoFromTelegram);
 
+    if(infoFromTelegram.game_short_name)
+    {        
         // it is 'start game' command from Telegram
 
         var methodParametersObject = 
@@ -93,7 +93,7 @@ app.post(postPathWithToken, (req, res) =>
     else
     {
         // it is an update
-        
+
         react(infoFromTelegram);
     }    
 });
