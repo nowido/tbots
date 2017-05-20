@@ -20,6 +20,7 @@ const token = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEE';
 const postPathWithToken = '/' + token;
 const telegramApiHost = 'https://api.telegram.org/bot' + token + '/';
 
+const fluid_sync_game_short_name = 'fluid_sync_game';
 const fluid_sync_game_id = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEEgame';
 const fluid_sync_game_url = 'https://fluidsync.herokuapp.com/main.html';
 //const fluid_sync_game_path = '/game_assets/main.html';
@@ -57,36 +58,35 @@ app.post(postPathWithToken, (req, res) =>
 
     var infoFromTelegram = req.body;
     var callbackQuery = infoFromTelegram.callback_query;
-    
-    console.log(infoFromTelegram);
+    var inlineQuery = infoFromTelegram.inline_query;
+
+    //console.log(infoFromTelegram);
 
     if(callbackQuery)
     {
         if(callbackQuery.game_short_name)
         {        
-            // it is 'start game' command from Telegram
-
             sendTelegramMethod('answerCallbackQuery', 
             {
                 callback_query_id: callbackQuery.id,
                 url: fluid_sync_game_url                
             });            
         }
-        else
-        {            
-            var gameObject = 
-            {
-                type: 'game', 
-                id: fluid_sync_game_id, 
-                game_short_name: 'fluid_sync_game'
-            };
+    }
+    else if(inlineQuery)
+    {
+        var gameObject = 
+        {
+            type: 'game', 
+            id: fluid_sync_game_id, 
+            game_short_name: fluid_sync_game_short_name
+        };
 
-            sendTelegramMethod('answerInlineQuery', 
-            {
-                inline_query_id: callbackQuery.id,
-                results: [gameObject]
-            });
-        }
+        sendTelegramMethod('answerInlineQuery', 
+        {
+            inline_query_id: callbackQuery.id,
+            results: [gameObject]
+        });
     }
     else if(infoFromTelegram.message)
     {
