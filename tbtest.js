@@ -53,11 +53,13 @@ app.get('/', (req, res) =>
 
 app.post(postPathWithToken, (req, res) => 
 {
-    res.end();
+    res.end();    
 
     var infoFromTelegram = req.body;
     var callbackQuery = infoFromTelegram.callback_query;
     
+    console.log(infoFromTelegram);
+
     if(callbackQuery)
     {
         if(callbackQuery.game_short_name)
@@ -71,9 +73,7 @@ app.post(postPathWithToken, (req, res) =>
             });            
         }
         else
-        {
-            console.log(infoFromTelegram);
-
+        {            
             var gameObject = 
             {
                 type: 'game', 
