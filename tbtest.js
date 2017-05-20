@@ -7,7 +7,6 @@
 //  396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEE
 
 //  fluid_sync_game
-// id = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEEgame'
 
 // https://api.telegram.org/bot<token>/METHOD_NAME
 
@@ -44,7 +43,6 @@ var imageFileId = undefined;
 //------------------------------------------------------------------------------
 
 app.use(bodyParser.json());
-app.use(express.static('public'))
 
 //------------------------------------------------------------------------------
 
@@ -101,6 +99,7 @@ app.post(postPathWithToken, (req, res) =>
 
 app.get(fluid_sync_game_path, (req, res) => 
 {
+    console.log('game url requested');
     var f = fs.createReadStream(__dirname + fluid_sync_game_main_file);        
     f.pipe(res);    
 });
