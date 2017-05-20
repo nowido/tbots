@@ -21,9 +21,8 @@ const postPathWithToken = '/' + token;
 const telegramApiHost = 'https://api.telegram.org/bot' + token + '/';
 
 const fluid_sync_game_id = '396229520:AAEl6G6HrQo8vopDio2PSPZlcNx2Y4KxHEEgame';
-const fluid_sync_game_url = 'https://fluidsync.herokuapp.com/' + token + '/game_assets/main.html';
-const fluid_sync_game_path = postPathWithToken + '/game_assets/main.html';
-const fluid_sync_game_main_file = '/game_assets/main.html';
+const fluid_sync_game_url = 'https://fluidsync.herokuapp.com/main.html';
+//const fluid_sync_game_path = '/game_assets/main.html';
 
 const fs = require('fs');
 const express = require('express');
@@ -43,6 +42,7 @@ var imageFileId = undefined;
 //------------------------------------------------------------------------------
 
 app.use(bodyParser.json());
+app.use(express.static('game_assets'));
 
 //------------------------------------------------------------------------------
 
@@ -57,9 +57,7 @@ app.post(postPathWithToken, (req, res) =>
 
     var infoFromTelegram = req.body;
     var callbackQuery = infoFromTelegram.callback_query;
-
-    //console.log(infoFromTelegram);
-
+    
     if(callbackQuery)
     {
         if(callbackQuery.game_short_name)
@@ -74,6 +72,8 @@ app.post(postPathWithToken, (req, res) =>
         }
         else
         {
+            console.log(infoFromTelegram);
+
             var gameObject = 
             {
                 type: 'game', 
@@ -93,14 +93,13 @@ app.post(postPathWithToken, (req, res) =>
         react(infoFromTelegram);
     }
 });
-
+/*
 app.get(fluid_sync_game_path, (req, res) => 
-{
-    console.log('game url accessed!');
-    var f = fs.createReadStream(__dirname + fluid_sync_game_main_file);        
+{    
+    var f = fs.createReadStream(__dirname + fluid_sync_game_path);        
     f.pipe(res);    
 });
-
+*/
 app.listen(process.env.PORT, () => 
 {
     console.log(`Bot listening on port ${process.env.PORT}!`);
